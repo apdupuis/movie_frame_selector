@@ -22,6 +22,7 @@ display_scalar = 0.75 #how large is the image we see when editing
 current_frame_index = 0
 capture_new_frame = True
 total_frames = 0
+output_file_prefix = ""
 
 def update_frame(frame_offset):
 	global current_frame_index, capture_new_frame, total_frames
@@ -75,6 +76,13 @@ while(video_capture.isOpened()):
 		update_frame(1)
 	elif k==101: # if 'e', advance 10 frames
 		update_frame(10)
+	elif k==115: # if 's', save the frame
+		if output_file_prefix == "":
+			output_file_prefix = tkFileDialog.asksaveasfilename()
+		if output_file_prefix != "":
+			output_file = output_file_prefix+"_frame_"+str(int(current_frame_index)).zfill(5)+".png"
+			print("Saving to "+output_file)
+			cv2.imwrite(output_file, frame)
 	else:
 		print(k)
 
