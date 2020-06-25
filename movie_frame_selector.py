@@ -46,10 +46,11 @@ video_capture = cv2.VideoCapture(src_file)
 # Check if camera opened successfully
 if (video_capture.isOpened()== False):
 	print("Error opening video stream or file")
+else:
+	total_frames = video_capture.get(7) 
 
 while(video_capture.isOpened()):
-	total_frames = video_capture.get(7)
-
+	
 	# read in current frame
 	# note - we might actually need it to be current_frame_index - 1, if it in face 
 	# reads the NEXT frame
@@ -61,6 +62,8 @@ while(video_capture.isOpened()):
 		if capture_new_frame:
 			capture_new_frame = False
 			cv2.imshow('Frame display', frame)
+	else:
+		print("Failed to get frame")
 
 	k = cv2.waitKey(33)
 	if k==-1:  # normally -1 returned,so don't print it
