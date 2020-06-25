@@ -68,6 +68,8 @@ while(video_capture.isOpened()):
 	elif k==27:	# Esc key to stop
 		# sys.exit()
 		break
+	elif k==122: # if 'z', go back 100 frames
+		update_frame(-100)
 	elif k==113: # if 'q', go back 10 frames
 		update_frame(-10)
 	elif k==97: # if 'a', go to the previous frame
@@ -76,6 +78,8 @@ while(video_capture.isOpened()):
 		update_frame(1)
 	elif k==101: # if 'e', advance 10 frames
 		update_frame(10)
+	elif k==99: # if 'c', advance 100 frames
+		update_frame(100)
 	elif k==115: # if 's', save the frame
 		if output_file_prefix == "":
 			output_file_prefix = tkFileDialog.asksaveasfilename()
