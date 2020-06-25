@@ -21,6 +21,23 @@ src_file = tkFileDialog.askopenfilename()
 display_scalar = 0.75 #how large is the image we see when editing 
 current_frame_index = 0
 capture_new_frame = True
+total_frames = 0
+
+def update_frame(frame_offset):
+	global current_frame_index, capture_new_frame, total_frames
+
+	if(total_frames	< 1):
+		print("Not enough frames")
+		return
+	
+	current_frame_index	+= frame_offset
+	while(current_frame_index < 0):
+		current_frame_index	+= total_frames
+
+	current_frame_index	= current_frame_index % total_frames
+	capture_new_frame = True
+	print("Current frame: "+str(current_frame_index))
+	return
 
 # read in video
 video_capture = cv2.VideoCapture(src_file)
@@ -51,21 +68,13 @@ while(video_capture.isOpened()):
 		# sys.exit()
 		break
 	elif k==113: # if 'q', go back 10 frames
-		current_frame_index	 -= 10
-		print("Current frame: "+str(current_frame_index))
-		capture_new_frame = True
+		update_frame(-10)
 	elif k==97: # if 'a', go to the previous frame
-		current_frame_index	 -= 1
-		print("Current frame: "+str(current_frame_index))
-		capture_new_frame = True
+		update_frame(-1)
 	elif k==100: # if 'd', to the next frame
-		current_frame_index	 += 1
-		print("Current frame: "+str(current_frame_index))
-		capture_new_frame = True
+		update_frame(1)
 	elif k==101: # if 'e', advance 10 frames
-		current_frame_index	+= 10
-		print("Current frame: "+str(current_frame_index))
-		capture_new_frame = True
+		update_frame(10)
 	else:
 		print(k)
 
