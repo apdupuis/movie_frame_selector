@@ -8,7 +8,7 @@
 import cv2
 import os
 import sys
-# from shutil import move
+import json # for config file 
 
 import Tkinter, tkFileDialog
 
@@ -16,13 +16,14 @@ import Tkinter, tkFileDialog
 root = Tkinter.Tk()
 root.withdraw()
 
-src_file = tkFileDialog.askopenfilename()
-
 display_scalar = 0.75 #how large is the image we see when editing 
 current_frame_index = 0
 capture_new_frame = True
 total_frames = 0
+
 output_file_prefix = ""
+previous_src_file = ""
+previous_dst_file = ""
 
 def update_frame(frame_offset):
 	global current_frame_index, capture_new_frame, total_frames
@@ -39,6 +40,31 @@ def update_frame(frame_offset):
 	capture_new_frame = True
 	print("Current frame: "+str(current_frame_index))
 	return
+
+# check if we have a config file - if not, make one
+# the config file will contain the last directories used for loading and saving 
+
+if os.path.exists("movie_frame_selector_config.json"):
+	with open("movie_frame_selector_config.json") as config_file:
+		config_file_data = json.load(config_file)
+		previous_src_file = config_file_data["previous_src_file"]
+		previous_dst_file = config_file_data["previous_dst_file"]
+		config_file.close()
+else:
+	with open("movie_frame_selector_config.json", "w+") as config_file:
+		config_file_data = {}
+		config_file_data["previous_src_file"] = previous_src_file
+		config_file_data["previous_dst_file"] = previous_dst_file
+		json.dump(config_file_data, config_file)
+		config_file.close()
+
+src_file = tkFileDialog.askopenfilename(initialfile=previous_src_file)
+
+with open("movie_frame_selector_config.json", "w") as config_file:
+	previous_src_file = src_file
+	config_file_data["previous_src_file"] = previous_src_file
+	json.dump(config_file_data, config_file)
+	config_file.close()
 
 # read in video
 video_capture = cv2.VideoCapture(src_file)
@@ -85,11 +111,17 @@ while(video_capture.isOpened()):
 		update_frame(100)
 	elif k==115: # if 's', save the frame
 		if output_file_prefix == "":
-			output_file_prefix = tkFileDialog.asksaveasfilename()
+			output_file_prefix = tkFileDialog.asksaveasfilename(initialfile=previous_dst_file)
 		if output_file_prefix != "":
 			output_file = output_file_prefix+"_frame_"+str(int(current_frame_index)).zfill(5)+".png"
 			print("Saving to "+output_file)
 			cv2.imwrite(output_file, frame)
+			with open("movie_frame_selector_config.json", "w") as config_file:
+				previous_dst_file = output_file_prefix
+				config_file_data["previous_dst_file"] = previous_dst_file
+				json.dump(config_file_data, config_file)
+				config_file.close()
+
 	else:
 		print(k)
 

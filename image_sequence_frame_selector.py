@@ -18,8 +18,6 @@ import Tkinter, tkFileDialog
 root = Tkinter.Tk()
 root.withdraw()
 
-
-
 display_scalar = 0.75 #how large is the image we see when editing 
 current_image_index = 0
 load_new_image = True
