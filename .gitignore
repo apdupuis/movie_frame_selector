@@ -1,0 +1,6 @@
+# ignore bat files
+image_sequence_frame_selector.bat
+movie_frame_selector.bat
+# ignore config files containing previous src and dst
+image_sequence_frame_selector_config.json
+movie_frame_selector_config.json
