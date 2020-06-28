@@ -41,6 +41,28 @@ def update_frame(frame_offset):
 	print("Current frame: "+str(current_frame_index))
 	return
 
+def open_movie():
+	global previous_src_file, total_frames, capture_new_frame, output_file_prefix, current_frame_index, video_capture
+	# prompt for file
+	src_file = tkFileDialog.askopenfilename(initialfile=previous_src_file)
+	# save the new filename in the config
+	with open("movie_frame_selector_config.json", "w") as config_file:
+		previous_src_file = src_file
+		config_file_data["previous_src_file"] = previous_src_file
+		json.dump(config_file_data, config_file)
+		config_file.close()
+	video_capture = cv2.VideoCapture(src_file)
+
+	# Check if camera opened successfully
+	if (video_capture.isOpened()== False):
+		print("Error opening video stream or file")
+	else:
+		total_frames = video_capture.get(7)
+		capture_new_frame = True
+		current_frame_index = 0
+		# prompt for the option of a new filename next time we save
+		output_file_prefix = ""
+
 # check if we have a config file - if not, make one
 # the config file will contain the last directories used for loading and saving 
 
@@ -58,22 +80,8 @@ else:
 		json.dump(config_file_data, config_file)
 		config_file.close()
 
-src_file = tkFileDialog.askopenfilename(initialfile=previous_src_file)
-
-with open("movie_frame_selector_config.json", "w") as config_file:
-	previous_src_file = src_file
-	config_file_data["previous_src_file"] = previous_src_file
-	json.dump(config_file_data, config_file)
-	config_file.close()
-
 # read in video
-video_capture = cv2.VideoCapture(src_file)
-
-# Check if camera opened successfully
-if (video_capture.isOpened()== False):
-	print("Error opening video stream or file")
-else:
-	total_frames = video_capture.get(7) 
+open_movie()
 
 while(video_capture.isOpened()):
 	
@@ -109,6 +117,8 @@ while(video_capture.isOpened()):
 		update_frame(10)
 	elif k==99: # if 'c', advance 100 frames
 		update_frame(100)
+	elif k==111: # if 'o', prompt to open a new file
+		open_movie()
 	elif k==115: # if 's', save the frame
 		if output_file_prefix == "":
 			output_file_prefix = tkFileDialog.asksaveasfilename(initialfile=previous_dst_file)
