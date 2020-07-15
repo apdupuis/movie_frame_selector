@@ -117,6 +117,8 @@ while(video_capture.isOpened()):
 		update_frame(10)
 	elif k==99: # if 'c', advance 100 frames
 		update_frame(100)
+	elif k==110: # if 'n', save with a new filename 
+		print("todo: save with a new filename")
 	elif k==111: # if 'o', prompt to open a new file
 		open_movie()
 	elif k==115: # if 's', save the frame
